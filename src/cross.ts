@@ -11,13 +11,15 @@ export class Cross {
       const shouldCross = Math.random();
       
       if(shouldCross <= prob){
-        const c1 = Math.round(Math.random() * (specimensCount - 1));
-        const c2 = Math.round(Math.random() * (specimensCount - c1 - 1) + c1);
+        // const c1 = Math.round(Math.random() * (specimensCount - 1));
+        // const c2 = Math.round(Math.random() * (specimensCount - c1 - 1) + c1);
 
         const firstSpecimen = tempPopulation.splice(0, 1)[0];
         const secondSpecimen = tempPopulation.splice(Math.round(Math.random() * (tempPopulation.length - 1)), 1)[0];
-
-        const slice1 = firstSpecimen.track.slice(c1, c2)
+        // const child = new Array(firstSpecimen.track.length);
+        this.crossTracks(firstSpecimen.track, secondSpecimen.track);
+        // console.log(firstSpecimen.track.toString(), secondSpecimen.track.toString());
+        // const slice1 = firstSpecimen.track.slice(c1, c2)
         // const p1f = firstSpecimen.track.splice(0, 1);
         // const p2f = secondSpecimen.track.splice(0, 1);
 
@@ -38,5 +40,26 @@ export class Cross {
     
     
 
+  }
+
+  private static crossTracks(t1: string[], t2: string[]){
+    // console.log(t1.toString());
+    const child = new Array(t1.length + 1).fill(null);
+    const specimensCount = t1.length;
+    const c1 = Math.round(Math.random() * (specimensCount - 1));
+    const c2 = Math.round((Math.random() * specimensCount - 1 - c1) + c1 + 1);
+
+    t1.slice(c1, c2).forEach((trackPart, i) => child[c1+i] = trackPart);
+    // t2.splice(c1, Math.abs(c1-c2));
+    let i2=0;
+    for(let i=c2; i<child.length; i++){
+      if(!child.includes(t2[i2])){
+        child[i] = t2[i2];
+      }
+      i2++;
+    }
+    console.log(child);
+    // child[c1] = [...t1.slice(c1,c2)];
+    // console.log(child.flat(), child.flat().length);
   }
 }
