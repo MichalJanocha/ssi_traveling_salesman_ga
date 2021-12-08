@@ -1,3 +1,4 @@
+import { DistanceSpecimenTotal } from "./distance_specimen_total";
 import { Specimen } from "./generate_population";
 
 export class Cross {
@@ -11,55 +12,60 @@ export class Cross {
       const shouldCross = Math.random();
       
       if(shouldCross <= prob){
-        // const c1 = Math.round(Math.random() * (specimensCount - 1));
-        // const c2 = Math.round(Math.random() * (specimensCount - c1 - 1) + c1);
-
         const firstSpecimen = tempPopulation.splice(0, 1)[0];
         const secondSpecimen = tempPopulation.splice(Math.round(Math.random() * (tempPopulation.length - 1)), 1)[0];
-        // const child = new Array(firstSpecimen.track.length);
-        this.crossTracks(firstSpecimen.track, secondSpecimen.track);
-        // console.log(firstSpecimen.track.toString(), secondSpecimen.track.toString());
-        // const slice1 = firstSpecimen.track.slice(c1, c2)
-        // const p1f = firstSpecimen.track.splice(0, 1);
-        // const p2f = secondSpecimen.track.splice(0, 1);
 
-        // const p1s = firstSpecimen.track.slice(0, cutPoint);
-        // const p1e = firstSpecimen.track.slice(cutPoint, firstSpecimen.track.length);
-        // // console.log(`p1leng: ${p1f.length} + ${p1s.length} + ${p1e.length}`)
-
-        // const p2s = secondSpecimen.track.slice(0, cutPoint);
-        // const p2e = secondSpecimen.track.slice(cutPoint, secondSpecimen.track.length);
-
-        // const c1 = p1f.concat(p1s).concat(p2e.filter(x => !p1s.includes(x)));
-        // const c2 = p2f.concat(p1e).concat(p2s.filter(x => !p1e.includes(x)));
-        // console.log('potomek1:',c1.toString(), c1.length, 'potomeke2: ',c2.toString(), c2.length);
+        const spec1: Specimen = {
+          track: this.crossTracks(firstSpecimen.track, secondSpecimen.track).filter(x => x !== null),
+          distance: 0
+        };
+        const spec2: Specimen = {
+          track: this.crossTracks(secondSpecimen.track, firstSpecimen.track).filter(x => x !== null),
+          distance: 0
+        };
+        finalPopulation.push(spec1, spec2);
+      }else{
+        const firstSpecimen = tempPopulation.splice(0, 1)[0];
+        const secondSpecimen = tempPopulation.splice(Math.round(Math.random() * (tempPopulation.length - 1)), 1)[0];
+        finalPopulation.push(firstSpecimen, secondSpecimen);
       }
-
     }
-
-    
-    
-
+    return finalPopulation;
   }
 
   private static crossTracks(t1: string[], t2: string[]){
-    // console.log(t1.toString());
-    const child = new Array(t1.length + 1).fill(null);
+    const child = new Array(t1.length).fill(null);
     const specimensCount = t1.length;
     const c1 = Math.round(Math.random() * (specimensCount - 1));
-    const c2 = Math.round((Math.random() * specimensCount - 1 - c1) + c1 + 1);
+    const c2 = Math.round((Math.random() * (specimensCount - c1 - 1)) + c1);
 
-    t1.slice(c1, c2).forEach((trackPart, i) => child[c1+i] = trackPart);
-    // t2.splice(c1, Math.abs(c1-c2));
-    let i2=0;
-    for(let i=c2; i<child.length; i++){
+    t1.slice(c1, c2+1).forEach((trackPart, i) => child[c1+i] = trackPart);
+
+    let secondPartHasNulls = true;
+    let firstPartHasNulls = true;
+    let i2 = c2+2 > specimensCount ? 0 : c2+1;
+    let i=c2+1;
+    let trys = 0;
+    while(secondPartHasNulls && trys < 20){
+      if(i2 == specimensCount){
+        i2 = 0;
+      }
       if(!child.includes(t2[i2])){
         child[i] = t2[i2];
+        i++;
+      }
+      if((!child.slice(c2).includes(null) && firstPartHasNulls) || i > specimensCount-1){
+        i=0;
+        firstPartHasNulls = false;
+      }
+      if(!child.includes(null)){
+        secondPartHasNulls = false;
+        break;
       }
       i2++;
+      trys++;
     }
-    console.log(child);
-    // child[c1] = [...t1.slice(c1,c2)];
-    // console.log(child.flat(), child.flat().length);
+
+    return child;
   }
 }

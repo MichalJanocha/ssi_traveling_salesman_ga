@@ -9,6 +9,7 @@ export class DistanceSpecimenTotal{
     },
     population: Specimen[]
   ){
+    // console.log(population);
     return population.map(pop => DistanceSpecimenTotal.calculateSingle(distMatrix, pop))
   }
 
@@ -22,6 +23,7 @@ export class DistanceSpecimenTotal{
   ){
     population.distance = population.track.reduce((prev, cur, idx, arr) => {
       if(arr[idx+1] !== undefined){
+        // console.log(prev, distMatrix[cur], cur, idx)
         return prev + distMatrix[cur][arr[idx+1]]
       }else{
         return prev + distMatrix[cur][arr[0]]
